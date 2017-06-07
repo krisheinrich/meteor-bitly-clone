@@ -45,8 +45,8 @@ const getTrackerLoader = (reactiveMapper) => {
   };
 };
 
-// Specify the authenication props to pass down to the components
-// (Used by Authenticated and Public routes to redirect user if needed)
+// Specify the authenication props to pass down to the components (used by
+// Authenticated and Public routes to redirect user if needed)
 const reactiveMapper = (props, onData) => {
   const isLoggingIn = Meteor.loggingIn();
   onData(null, {
