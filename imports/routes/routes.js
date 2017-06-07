@@ -11,32 +11,10 @@ import { compose } from 'react-komposer';
 
 import Authenticated from './Authenticated';
 import Public from './Public';
-
 import Link from '../ui/Link';
 import SignUp from '../ui/SignUp';
 import NotFound from '../ui/NotFound';
 import Login from '../ui/Login';
-
-// // Factory for creating access-controlled routes
-// const CustomRoute = (accessCondition, redirectPath) => {
-//   return ({ component: Component, ...rest }) => (
-//     <Route {...rest} render={props => (
-//       (eval(accessCondition)) ? (
-//         <Component {...props}/>
-//       ) : (
-//         <Redirect to={{
-//           pathname: redirectPath,
-//           state: { from: props.location }
-//         }}/>
-//       )
-//     )}/>
-//   );
-// };
-//
-// // Restrict access and force redirect based on user's authentication state
-// // accessCondition is passed in as a string so that it can be evaluated more than once
-// const PrivateRoute = CustomRoute( '!!Meteor.userId()', '/' )
-// const PublicRoute = CustomRoute( '!Meteor.userId()', '/links' );
 
 const routes = (appProps) => (
   <Router>
@@ -49,12 +27,13 @@ const routes = (appProps) => (
   </Router>
 );
 
+// Connect the routes component to the Meteor Tracker
 const getTrackerLoader = (reactiveMapper) => {
   return (props, onData, env) => {
     let trackerCleanup = null;
     const handler = Tracker.nonreactive(() => {
       return Tracker.autorun(() => {
-      	// assign the custom clean-up function.
+      	// assign the custom clean-up function
         trackerCleanup = reactiveMapper(props, onData, env);
       });
     });
@@ -66,6 +45,8 @@ const getTrackerLoader = (reactiveMapper) => {
   };
 };
 
+// Specify the authenication props to pass down to the components
+// (Used by Authenticated and Public routes to redirect user if needed)
 const reactiveMapper = (props, onData) => {
   const isLoggingIn = Meteor.loggingIn();
   onData(null, {
@@ -74,4 +55,5 @@ const reactiveMapper = (props, onData) => {
   });
 };
 
+// Export connected container component
 export default compose(getTrackerLoader(reactiveMapper))(routes);
